@@ -57,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 header('Content-Type: application/json; charset=utf-8');
 
+// Health check endpoint for Railway / Docker (returns 200 instantly, no DB needed)
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if ($uri === '/health' || $uri === '/') {
+    http_response_code(200);
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
+
 // Serve uploaded files
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 if (strpos($uri, '/uploads/') === 0) {
