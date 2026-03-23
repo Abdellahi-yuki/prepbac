@@ -25,10 +25,10 @@ FROM nginx:alpine AS runner
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx config (has listen ${PORT}; inside)
+# Copy nginx config (has listen 80; inside)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Railway injects $PORT — sed replaces it safely without destroying Nginx $uri variables
-ENV PORT=80
-CMD /bin/sh -c "sed -i \"s/listen \\\${PORT};/listen ${PORT};/g\" /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Railway routes traffic to the explicitly exposed port
+EXPOSE 80
+
 
