@@ -1,0 +1,325 @@
+/* ======= CENTERING A4 DOC-VIEWER LAYOUT (CLEAN) ======= */
+
+.fv-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 99999;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: fvFadeIn 0.25s ease-out;
+}
+
+@keyframes fvFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ------- Custom Dark Header ------- */
+.fv-header {
+    width: 100%;
+    height: 72px;
+    /* Fixed height for reliable child positioning */
+    padding: 16px 32px;
+    background: #161111;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100010;
+    /* Slightly higher */
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fv-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+}
+
+.fv-filename {
+    font-weight: 650;
+    font-size: 0.95rem;
+    max-width: 450px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+    opacity: 0.9;
+}
+
+.fv-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.fv-btn,
+.fv-btn-close {
+    background: #221c1c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fdfdfd;
+}
+
+.fv-btn:hover {
+    background: #5e5e5e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.fv-btn-close:hover {
+    background: #de3232;
+    border-color: #ff5f5f;
+}
+
+/* ------- The Translucent Backdrop ------- */
+.fv-body {
+    flex: 1;
+    width: 100%;
+    background: #525659;
+    /* Standard PDF viewer dark grey background */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    cursor: pointer;
+    overflow: auto;
+    position: relative;
+    scrollbar-gutter: stable;
+    padding: 40px 0;
+    /* Add some space at top and bottom */
+}
+
+/* ------- Centered A4 DocViewer Container ------- */
+.fv-viewer-container {
+    width: fit-content;
+    min-width: 60vw;
+    background: transparent;
+    /* Changed from white to transparent to let page shadows work */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    margin: 0 auto;
+    animation: fvDocSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: visible;
+    /* Reverting to visible to allow sticky headers to work correctly inside the scrollable body if needed */
+}
+
+@keyframes fvDocSlideUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ------- Library Overrides for Better Aesthetic ------- */
+#react-doc-viewer {
+    background-color: transparent !important;
+    overflow: visible !important;
+    flex: 1;
+}
+
+#proxy-renderer {
+    background-color: transparent !important;
+}
+
+/* Fix for PDF reader background */
+.pdf-reader-container {
+    background-color: transparent !important;
+    overflow: visible !important;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Gap between pages */
+}
+
+/* Hide library's default header if it leaks */
+#header-bar {
+    display: none !important;
+}
+
+/* PDF Page specific overrides */
+.react-pdf__Page {
+    margin: 0 auto 12px auto !important;
+    /* Bottom margin for separation */
+    background: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    /* Add shadow to individual pages */
+}
+
+.react-pdf__Page:last-child {
+    margin-bottom: 0 !important;
+}
+
+.react-pdf__Page__canvas {
+    margin: 0 auto !important;
+}
+
+/* Image Viewer specific overrides */
+#image-renderer {
+    max-width: 60vw !important;
+    margin: 0 auto !important;
+}
+
+/* Style the internal PDF Controls (Zoom/Nav/Download) */
+#pdf-controls {
+    justify-content: center !important;
+    padding: 10px 24px !important;
+    gap: 12px !important;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    position: fixed !important;
+    /* Fixed at the top */
+    top: 72px !important;
+    /* Exactly below header height (72px) */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 100005 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    width: fit-content !important;
+    min-width: 320px !important;
+    border-radius: 0 0 16px 16px !important;
+    /* Elegant bottom rounding */
+    display: flex !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-top: none !important;
+}
+
+#pdf-controls button,
+#pdf-controls a {
+    background: #ffffff !important;
+    /* White background */
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    /* Slightly darker border for contrast on white */
+    cursor: pointer !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #000000 !important;
+    /* Black text */
+    font-family: inherit !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+#pdf-controls button:hover,
+#pdf-controls a:hover {
+    background: #f4f4f5 !important;
+    /* Very light grey hover on white background */
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+#pdf-controls button:disabled,
+#pdf-controls a:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Fix span text in pdf controls if any */
+#pdf-controls span {
+    color: #111 !important;
+    font-weight: 600 !important;
+    margin: 0 8px !important;
+}
+
+/* ------- Custom Excel Fallback Styling ------- */
+.fv-excel-container {
+    width: 100%;
+    height: 100%;
+    min-height: 297mm;
+    background: #ffffff;
+    overflow: auto;
+    padding: 20px;
+}
+
+.fv-excel-table table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.fv-excel-table th,
+.fv-excel-table td {
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.fv-excel-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+}
+
+.fv-excel-table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+/* ------- Custom Text Fallback Styling ------- */
+.fv-text-container {
+    width: 100%;
+    height: 100%;
+    min-height: 297mm;
+    background: #ffffff;
+    overflow: auto;
+    padding: 60px 80px;
+}
+
+.fv-text-content {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #111;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Mobile responsive */
+@media (max-width: 900px) {
+    .fv-header {
+        padding: 12px 20px;
+    }
+
+    .fv-viewer-container {
+        width: 100%;
+        min-height: calc(100vh - 80px);
+        margin: 0;
+        border-radius: 0;
+    }
+}
