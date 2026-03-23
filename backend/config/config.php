@@ -2,11 +2,11 @@
 namespace App\Config;
 
 // Database Configuration
-// Priority: Railway MYSQL_* vars → our DB_* vars → local dev defaults
-define('DB_HOST', getenv('MYSQL_HOST')     ?: getenv('DB_HOST') ?: 'localhost');
-define('DB_USER', getenv('MYSQL_USER')     ?: getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('MYSQL_PASSWORD') ?: getenv('DB_PASS') ?: 'root');
-define('DB_NAME', getenv('MYSQL_DATABASE') ?: getenv('DB_NAME') ?: 'bac_prepa');
+// Priority: Railway MYSQL* vars → MYSQL_* vars → DB_* vars → local dev defaults
+define('DB_HOST', getenv('MYSQLHOST')     ?: getenv('MYSQL_HOST')     ?: getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('MYSQLUSER')     ?: getenv('MYSQL_USER')     ?: getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: getenv('DB_PASS') ?: 'root');
+define('DB_NAME', getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: getenv('DB_NAME') ?: 'bac_prepa');
 
 // Application Configuration
 define('APP_URL',             getenv('APP_URL')             ?: 'http://localhost:8000');
