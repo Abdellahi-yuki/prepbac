@@ -28,7 +28,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx config (has listen 80; inside)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Railway routes traffic to the explicitly exposed port
-EXPOSE 80
+# Railway injects a dynamic $PORT. Replace listen 80; with listen $PORT;
+ENV PORT=80
+CMD /bin/sh -c "sed -i \"s/listen 80;/listen ${PORT};/g\" /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 

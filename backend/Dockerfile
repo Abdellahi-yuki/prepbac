@@ -36,7 +36,8 @@ RUN { \
     echo 'max_input_time = 600'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
 
-# Railway respects EXPOSE and routes traffic to this internal port
-EXPOSE 8000
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "/var/www/html/api", "/var/www/html/api/index.php"]
+# Railway injects a dynamic $PORT variable. We bind PHP directly to it.
+ENV PORT=8000
+CMD php -S 0.0.0.0:$PORT -t /var/www/html/api /var/www/html/api/index.php
+
 
