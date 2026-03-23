@@ -22,15 +22,13 @@ RUN npm run build
 # ── Stage 2: Serve ──────────────────────────────────────────────────────────────
 FROM nginx:alpine AS runner
 
-# Install envsubst (gettext package) for PORT substitution
-RUN apk add --no-cache gettext
-
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx config template (uses ${PORT})
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy nginx config (has listen ${PORT}; inside)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Railway injects $PORT — envsubst renders the template at startup
+# Railway injects $PORT — sed replaces it safely without destroying Nginx $uri variables
 ENV PORT=80
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD /bin/sh -c "sed -i \"s/listen \\\${PORT};/listen ${PORT};/g\" /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+
