@@ -2,18 +2,19 @@
 namespace App\Config;
 
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', 'root');
-define('DB_NAME', 'bac_prepa');
+// Priority: Railway MYSQL_* vars → our DB_* vars → local dev defaults
+define('DB_HOST', getenv('MYSQL_HOST')     ?: getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('MYSQL_USER')     ?: getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('MYSQL_PASSWORD') ?: getenv('DB_PASS') ?: 'root');
+define('DB_NAME', getenv('MYSQL_DATABASE') ?: getenv('DB_NAME') ?: 'bac_prepa');
 
 // Application Configuration
-define('APP_URL', 'http://localhost:8000');
-define('JWT_SECRET', 'votre_jwt_secret_securise_ici_2026'); // À changer en prod
-define('CORS_ALLOWED_ORIGIN', 'http://localhost:5173');
+define('APP_URL',             getenv('APP_URL')             ?: 'http://localhost:8000');
+define('JWT_SECRET',          getenv('JWT_SECRET')          ?: 'votre_jwt_secret_securise_ici_2026');
+define('CORS_ALLOWED_ORIGIN', getenv('CORS_ALLOWED_ORIGIN') ?: 'http://localhost:5173');
 
-// Mode de développement (true = affiche erreurs détaillées)
-define('DEV_MODE', true);
+// Dev mode: off on Railway (set DEV_MODE=false env var), on locally
+define('DEV_MODE', filter_var(getenv('DEV_MODE') !== false ? getenv('DEV_MODE') : 'true', FILTER_VALIDATE_BOOLEAN));
 
 if (DEV_MODE) {
     ini_set('display_errors', 1);

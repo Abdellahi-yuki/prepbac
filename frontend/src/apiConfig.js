@@ -1,4 +1,9 @@
 export const getBaseUrl = () => {
+    // Production build on Railway — VITE_API_URL is injected at build time
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
 

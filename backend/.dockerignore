@@ -1,0 +1,7 @@
+vendor/
+out.log
+php.pid
+tests/
+.env
+Dockerfile
+.dockerignore
