@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 # Install system deps
 RUN apt-get update && apt-get install -y \
@@ -27,17 +27,7 @@ RUN composer install --no-dev --no-interaction --optimize-autoloader
 # Copy rest of the app
 COPY . .
 
-# Configure Apache document root to point to api/
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/api
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/sites-enabled/*.conf
-
-# Enable mod_rewrite for clean URLs
-RUN a2enmod rewrite
-
-# PHP runtime config for large uploads
+# PHP runtime config for large uploads (mirrors run.sh limits)
 RUN { \
     echo 'upload_max_filesize = 500M'; \
     echo 'post_max_size = 510M'; \
@@ -46,9 +36,6 @@ RUN { \
     echo 'max_input_time = 600'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
 
-# Railway entrypoint: patches Apache to listen on $PORT
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-EXPOSE 80
-CMD ["/docker-entrypoint.sh"]
+# Railway injects $PORT — PHP built-in server binds to it directly
+ENV PORT=8000
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT} -t /var/www/html/api /var/www/html/api/index.php"]
